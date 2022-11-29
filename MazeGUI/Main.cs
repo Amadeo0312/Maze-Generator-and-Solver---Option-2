@@ -24,6 +24,7 @@ namespace MazeGUI
         public enum SolverType
         {
             DepthFirstSearch,
+            BreadthFirstSearch,
             WallFollowerRight,
             WallFollowerLeft,
             RandomMouse
@@ -115,10 +116,10 @@ namespace MazeGUI
 
             Graphics g = CreateGraphics();
             Point topLeft = new Point(0, menu.Height)
-                                {
-                                    X = toPaint.X*10,
-                                    Y = toPaint.Y*10 + menu.Height
-                                };
+            {
+                X = toPaint.X * 10,
+                Y = toPaint.Y * 10 + menu.Height
+            };
 
             Bitmap drawSource = toPaint.X == current.X && toPaint.Y == current.Y
                                     ? Properties.Resources.squarecurrent
@@ -216,6 +217,18 @@ namespace MazeGUI
             Invalidate();
         }
 
+        private void GenerateBreadthFirstSearchMenuItem_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = false;
+            solverSteps = 0;
+            solverAgenda = new Stack<Point>();
+            solverHistory = new HashSet<Point>();
+            current = finish = start = new Point();
+            maze = new Maze(20, 15);
+            maze.Generate(Maze.GeneratorType.BreadthFirstSearch);
+            Invalidate();
+        }
+
         private void SolveStartMenuItem_Click(object sender, EventArgs e)
         {
             if (SolveMethodDepthFirstSearchMenuItem.Checked)
@@ -227,7 +240,7 @@ namespace MazeGUI
 
             if (SolveMethodWallFollowerRightMenuItem.Checked)
             {
-                start = new Point(0,0);
+                start = new Point(0, 0);
                 finish = new Point(maze.ColSize, maze.RowSize);
                 solverMethod = SolverType.WallFollowerRight;
             }
@@ -249,6 +262,9 @@ namespace MazeGUI
                 case SolverType.DepthFirstSearch:
                     Step_DepthFirstSearch();
                     break;
+                case SolverType.BreadthFirstSearch:
+                    Step_BreadthFirstSearch();
+                    break;
                 case SolverType.WallFollowerRight:
                     Step_WallFollower(true);
                     break;
@@ -263,7 +279,7 @@ namespace MazeGUI
 
         private void Step_WallFollower(bool right)
         {
-            if(solverSteps == 0)
+            if (solverSteps == 0)
             {
                 current = start;
                 previous = new Point(start.X - 1, start.Y);
@@ -309,7 +325,7 @@ namespace MazeGUI
             }
 
             // priority for WallFollowerLeft is same as WallFollowerRight except with next[0] and next[2] swapped
-            if(!right)
+            if (!right)
             {
                 Direction tmp = next[0];
                 next[0] = next[2];
@@ -323,7 +339,7 @@ namespace MazeGUI
                 int ny = current.Y + DirectionY[d];
                 Point np = new Point(nx, ny);
 
-                if(np == finish)
+                if (np == finish)
                 {
                     timer.Enabled = false;
                     statusLabel.Text = "Finish found in " + ++solverSteps + " steps.";
@@ -353,7 +369,61 @@ namespace MazeGUI
             current = solverAgenda.Pop();
             solverHistory.Add(current);
 
-            if(!Maze.IsOutOfBounds(prev.Y, prev.X, maze.Cells))
+            if (!Maze.IsOutOfBounds(prev.Y, prev.X, maze.Cells))
+                PaintOneCell(prev);
+            PaintOneCell(current);
+
+            var directions = new List<Direction>
+                                 {
+                                     Direction.N,
+                                     Direction.S,
+                                     Direction.E,
+                                     Direction.W
+                                 }
+                                 .OrderBy(x => Guid.NewGuid());
+
+            foreach (Direction d in directions)
+            {
+                int nx = current.X + DirectionX[d];
+                int ny = current.Y + DirectionY[d];
+                Point np = new Point(nx, ny);
+
+                if (Maze.IsOutOfBounds(ny, nx, maze.Cells) || !IsReachable(current, np))
+                    continue;
+
+                //check if finish square
+                if (nx == maze.Cells.GetLength(_columnDimension) - 1 && ny == maze.Cells.GetLength(_rowDimension) - 1)
+                {
+                    prev = current;
+                    current = new Point(nx, ny);
+                    PaintOneCell(prev);
+                    PaintOneCell(current);
+                    statusLabel.Text = "Finish found at (" + nx + "," + ny + ") in " + solverSteps + " steps.";
+                    timer.Enabled = false;
+                    break;
+                }
+
+                if (!solverAgenda.Contains(np) && !solverHistory.Contains(np))
+                    solverAgenda.Push(np);
+            }
+
+            solverSteps++;
+        }
+
+        private void Step_BreadthFirstSearch()
+        {
+            if (solverAgenda.Count == 0)
+            {
+                statusLabel.Text = "Unable to find exit. Tried " + ++solverSteps + " steps!";
+                timer.Enabled = false;
+                return;
+            }
+
+            Point prev = current;
+            current = solverAgenda.Pop();
+            solverHistory.Add(current);
+
+            if (!Maze.IsOutOfBounds(prev.Y, prev.X, maze.Cells))
                 PaintOneCell(prev);
             PaintOneCell(current);
 
@@ -446,7 +516,7 @@ namespace MazeGUI
                     item.Checked = false;
             }
 
-            switch(s.Text)
+            switch (s.Text)
             {
                 case "Fastest":
                     timer.Interval = 1;
@@ -472,6 +542,10 @@ namespace MazeGUI
                     solverMethod = SolverType.DepthFirstSearch;
                     break;
 
+                case "Breadth First Search":
+                    solverMethod = SolverType.BreadthFirstSearch;
+                    break;
+
                 case "Wall Follower (Right)":
                     solverMethod = SolverType.WallFollowerRight;
                     break;
@@ -488,7 +562,7 @@ namespace MazeGUI
 
         private void Step_RandomMouse()
         {
-            if(solverSteps == 0)
+            if (solverSteps == 0)
             {
                 solverHistory = new HashSet<Point>();
                 current = start;
@@ -536,7 +610,7 @@ namespace MazeGUI
 
                     previous = current;
                     current = np;
-                    if(!solverHistory.Contains(current))
+                    if (!solverHistory.Contains(current))
                         solverHistory.Add(current);
                     break;
                 }

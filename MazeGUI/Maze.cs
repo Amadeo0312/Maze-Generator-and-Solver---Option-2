@@ -26,7 +26,8 @@ namespace MazeGUI
         public enum GeneratorType
         {
             RecursiveBackTracker,
-            DepthFirstSearch
+            DepthFirstSearch,
+            BreadthFirstSearch
         }
 
         public Maze(int rows, int columns)
@@ -38,7 +39,7 @@ namespace MazeGUI
 
         public int[,] Init(int rows, int columns)
         {
-            int[,] cells = new int[rows,columns];
+            int[,] cells = new int[rows, columns];
 
             for (int i = 0; i < rows; i++)
             {
@@ -85,7 +86,10 @@ namespace MazeGUI
                     RecursiveBacktracker(0, 0, ref cells);
                     break;
                 case GeneratorType.DepthFirstSearch:
-                    DepthFirstSearch(new Point(0,0));
+                    DepthFirstSearch(new Point(0, 0));
+                    break;
+                case GeneratorType.BreadthFirstSearch:
+                    BreadthFirstSearch(new Point(0, 0));
                     break;
             }
 
@@ -95,11 +99,11 @@ namespace MazeGUI
         public void DepthFirstSearch(Point start)
         {
             Stack<Point> cellStack = new Stack<Point>();
-            int totalCells = RowSize*ColSize;
+            int totalCells = RowSize * ColSize;
             int visitedCells = 1;
             Point current = start;
 
-            while(visitedCells < totalCells)
+            while (visitedCells < totalCells)
             {
                 var directions = new List<Direction>
                                  {
@@ -131,9 +135,9 @@ namespace MazeGUI
 
                 if (selected == Direction.N || selected == Direction.S || selected == Direction.E || selected == Direction.W)
                 {
-                    Cells[current.Y, current.X] |= (int) selected;
-                    Cells[ny, nx] |= (int) Opposite[selected];
-                    
+                    Cells[current.Y, current.X] |= (int)selected;
+                    Cells[ny, nx] |= (int)Opposite[selected];
+
                     cellStack.Push(new Point(nx, ny));
                     current.X = nx;
                     current.Y = ny;
@@ -142,6 +146,62 @@ namespace MazeGUI
                 else
                 {
                     Point newCurrent = cellStack.Pop();
+                    current.X = newCurrent.X;
+                    current.Y = newCurrent.Y;
+                }
+            }
+        }
+
+        public void BreadthFirstSearch(Point start)
+        {
+            Queue<Point> cellStack = new Queue<Point>();
+            int totalCells = RowSize * ColSize;
+            int visitedCells = 1;
+            Point current = start;
+
+            while (visitedCells < totalCells)
+            {
+                var directions = new List<Direction>
+                                 {
+                                     Direction.N,
+                                     Direction.S,
+                                     Direction.E,
+                                     Direction.W
+                                 }
+                                 .OrderBy(x => Guid.NewGuid());
+
+                int nx = 0;
+                int ny = 0;
+                Direction selected = new Direction();
+
+                foreach (var d in directions)
+                {
+                    nx = current.X + DirectionX[d];
+                    ny = current.Y + DirectionY[d];
+
+                    if (IsOutOfBounds(ny, nx, Cells))
+                        continue;
+
+                    if (Cells[ny, nx] == 0)
+                    {
+                        selected = d;
+                        break;
+                    }
+                }
+
+                if (selected == Direction.N || selected == Direction.S || selected == Direction.E || selected == Direction.W)
+                {
+                    Cells[current.Y, current.X] |= (int)selected;
+                    Cells[ny, nx] |= (int)Opposite[selected];
+
+                    cellStack.Enqueue(new Point(nx, ny));
+                    current.X = nx;
+                    current.Y = ny;
+                    visitedCells++;
+                }
+                else
+                {
+                    Point newCurrent = cellStack.Dequeue();
                     current.X = newCurrent.X;
                     current.Y = newCurrent.Y;
                 }
@@ -171,8 +231,8 @@ namespace MazeGUI
                 if (grid[ny, nx] != 0)
                     continue;
 
-                grid[cy, cx] |= (int) direction;
-                grid[ny, nx] |= (int) Opposite[direction];
+                grid[cy, cx] |= (int)direction;
+                grid[ny, nx] |= (int)Opposite[direction];
 
                 RecursiveBacktracker(ny, nx, ref grid);
             }

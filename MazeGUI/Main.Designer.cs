@@ -48,12 +48,14 @@
             this.slowestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.methodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SolveMethodDepthFirstSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SolveMethodBreadthFirstSearchMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SolveMethodWallFollowerRightMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SolveMethodWallFollowerLeftMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.randomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recursiveBacktrackerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.depthFirstSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.breadthFirstSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timer = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -204,6 +206,7 @@
             // 
             this.methodToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SolveMethodDepthFirstSearchMenuItem,
+            this.SolveMethodBreadthFirstSearchMenuItem,
             this.SolveMethodWallFollowerRightMenuItem,
             this.SolveMethodWallFollowerLeftMenuItem,
             this.randomToolStripMenuItem});
@@ -220,6 +223,16 @@
             this.SolveMethodDepthFirstSearchMenuItem.Size = new System.Drawing.Size(182, 22);
             this.SolveMethodDepthFirstSearchMenuItem.Text = "Depth First Search";
             this.SolveMethodDepthFirstSearchMenuItem.Click += new System.EventHandler(this.ToggleMenuChecked);
+            // 
+            // SolveMethodBreadthFirstSearchMenuItem
+            // 
+            this.SolveMethodBreadthFirstSearchMenuItem.Checked = true;
+            this.SolveMethodBreadthFirstSearchMenuItem.CheckOnClick = true;
+            this.SolveMethodBreadthFirstSearchMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SolveMethodBreadthFirstSearchMenuItem.Name = "SolveMethodBreadthFirstSearchMenuItem";
+            this.SolveMethodBreadthFirstSearchMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.SolveMethodBreadthFirstSearchMenuItem.Text = "Breadth First Search";
+            this.SolveMethodBreadthFirstSearchMenuItem.Click += new System.EventHandler(this.ToggleMenuChecked);
             // 
             // SolveMethodWallFollowerRightMenuItem
             // 
@@ -248,7 +261,8 @@
             // 
             this.generateToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.recursiveBacktrackerToolStripMenuItem,
-            this.depthFirstSearchToolStripMenuItem});
+            this.depthFirstSearchToolStripMenuItem,
+            this.breadthFirstSearchToolStripMenuItem});
             this.generateToolStripMenuItem.Name = "generateToolStripMenuItem";
             this.generateToolStripMenuItem.Size = new System.Drawing.Size(66, 20);
             this.generateToolStripMenuItem.Text = "Generate";
@@ -266,6 +280,13 @@
             this.depthFirstSearchToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.depthFirstSearchToolStripMenuItem.Text = "Depth First Search";
             this.depthFirstSearchToolStripMenuItem.Click += new System.EventHandler(this.GenerateDepthFirstSearchMenuItem_Click);
+            // 
+            // breadthFirstSearchToolStripMenuItem
+            // 
+            this.breadthFirstSearchToolStripMenuItem.Name = "breadthFirstSearchToolStripMenuItem";
+            this.breadthFirstSearchToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.breadthFirstSearchToolStripMenuItem.Text = "Breadth First Search";
+            this.breadthFirstSearchToolStripMenuItem.Click += new System.EventHandler(this.GenerateBreadthFirstSearchMenuItem_Click);
             // 
             // timer
             // 
@@ -339,6 +360,7 @@
         private System.Windows.Forms.ToolStripMenuItem recursiveBacktrackerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem depthFirstSearchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem breadthFirstSearchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.StatusStrip statusStrip1;
@@ -353,6 +375,7 @@
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.ToolStripMenuItem methodToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SolveMethodDepthFirstSearchMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SolveMethodBreadthFirstSearchMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SolveMethodWallFollowerRightMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SolveMethodWallFollowerLeftMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
